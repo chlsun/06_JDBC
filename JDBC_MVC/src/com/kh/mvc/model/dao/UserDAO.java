@@ -1,9 +1,15 @@
 package com.kh.mvc.model.dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.kh.mvc.model.dto.UserDTO;
+import com.kh.mvc.util.JdbcUtil;
 
 /**
  * DAO(Data Access Object)
@@ -61,7 +67,21 @@ public class UserDAO {
 	 * 								DML 	 > 처리된 행의 개수
 	 */
 	
-	public List<UserDTO> findAll() {
+//	private final String URL = "jdbc:oracle:thin:@112.221.156.34:12345:xe";
+//	private final String USERNAME = "KH26_CYS";
+//	private final String PASSWORD = "KH1234";
+	
+	
+	static {
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		}catch(ClassNotFoundException e) {
+			System.out.println("ojdbc...잘넣었나요?"
+									+ "\n오타 안났나요????");
+		}
+	}
+	
+	public List<UserDTO> findAll(Connection conn) {
 		/*
 		 * VO / DTO / Entity 
 		 * ㄴ 위에 셋은 각각 조금씩의 의미는 다르지만 결국에 하는 일은 같음
@@ -71,22 +91,177 @@ public class UserDAO {
 		 * 문제점 : userDTO가 몇개가 나올지 알 수 없음
 		 */
 		
-		List<UserDTO> list = new ArrayList();
+		List<UserDTO> list = new ArrayList<UserDTO>();
 		
 		String sql = "SELECT "
 								+ "USER_NO"
 								+ ", USER_ID"
 								+ ", USER_PW"
 								+ ", USER_NAME"
-								+ ", ENROLL_NDATE"
+								+ ", ENROLL_DATE "
 								+ "FROM "
 									+ "TB_USER "
 								+ "ORDER "
 									+ "BY "
 										+ "ENROLL_DATE DESC";
-								
+		
+//		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		try {
+//			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				UserDTO user = new UserDTO();
+				
+				user.setUserNo(rset.getInt("USER_NO"));
+				user.setUserId(rset.getString("USER_ID"));
+				user.setUserPw(rset.getString("USER_PW"));
+				user.setUserName(rset.getString("USER_ID"));
+				user.setEnrollDate(rset.getDate("ENROLL_DATE"));
+				
+				list.add(user);
+			}
+			
+		} catch(SQLException e) {
+			System.out.println("오타?");
+		}	finally {
+			try {
+				if(rset!=null) rset.close();
+				if(pstmt!=null) pstmt.close();
+				if(conn!=null) conn.close();
+				
+			} catch(SQLException e) {
+				System.out.println("자원반납하는데 문제 일어남~");
+			}
+		}
 		
 		return list;
 	}
 	
+	/**
+	 * @param user 사용자가 입력한 아이디 / 비밀번호 / 이름이 각각 필드에 대입되어있음
+	 * @return 아직 뭐 돌려줄지 안정함
+	 */
+	public int insertUser(Connection conn, UserDTO user) {
+		PreparedStatement pstmt = null;
+		
+		String sql = """
+				INSERT INTO
+					TB_USER
+				VALUES(
+					SEQ_USER_NO.NEXTVAL, ?, ?, ?, SYSDATE)
+				""";
+		
+		int result = 0;
+		
+		try {
+//			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			
+			// conn.setAutoCommit(false);
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, user.getUserId());
+			pstmt.setString(2, user.getUserPw());
+			pstmt.setString(3, user.getUserName());
+			
+			result = pstmt.executeUpdate();
+			
+			
+		}catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	
+	public int isEmptyUserNo(Connection conn, int userNo) {
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = -1;
+		
+		String sql = """
+				SELECT USER_NO
+				FROM TB_USER
+				WHERE USER_NO = ?
+				""";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, userNo);
+			rs = pstmt.executeQuery();
+			
+			if(!!!rs.next()) {
+				return result;
+			}
+			
+			result = rs.getInt("USER_NO");
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(SQLException e) {
+				System.out.println("isEmptyUserNo:close() 예외");
+			}
+			
+		}
+		
+		return result;
+	}
+	
+	
+	public int updatePw(Connection conn, String newPw, int userNo) {
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = 0;
+		
+		String sql = """
+				UPDATE TB_USER
+				SET 
+					USER_PW = ?
+				WHERE 
+					USER_NO = ?
+				""";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, newPw);
+			pstmt.setInt(2, userNo);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(SQLException e) {
+				System.out.println("isEmptyUserNo:close() 예외");
+			}
+			
+		}
+		
+		return result;
+	}
 }
