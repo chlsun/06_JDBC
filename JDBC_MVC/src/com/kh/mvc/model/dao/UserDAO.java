@@ -264,4 +264,121 @@ public class UserDAO {
 		
 		return result;
 	}
+
+
+
+	public int userDelete(Connection conn, int userNo){
+		PreparedStatement pstmt = null;
+		int result = 0;
+
+		String sql = """
+				DELETE
+				FROM TB_USER
+				WHERE USER_NO = ?
+				""";
+
+		try{
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setInt(1, userNo);
+
+			result = pstmt.executeUpdate();
+
+		}catch(SQLException e){
+			System.out.println("SQL오류");
+		}finally{
+			try{
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(SQLException e){
+				System.out.println("close오류");
+			}
+		}
+
+		return result;
+	}
+
+
+	public UserDTO selectUserNo(Connection conn, int userNo){
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		UserDTO user = null;
+
+		String sql = """
+				SELECT USER_NO, USER_ID, USER_PW, USER_NAME, ENROLL_DATE
+				FROM TB_USER
+				WHERE USER_NO = ?
+				""";
+
+		try{
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setInt(1, userNo);
+			rs = pstmt.executeQuery();
+
+			if(rs.next()) {
+				user = new UserDTO(
+						rs.getInt("USER_NO"),
+						rs.getString("USER_ID"),
+						rs.getString("USER_PW"),
+						rs.getString("USER_NAME"),
+						rs.getDate("ENROLL_DATE")
+				);
+			}
+		}catch(SQLException e){
+			System.out.println("SQL오류");
+		}finally{
+			try{
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(SQLException e){
+				System.out.println("close오류");
+			}
+		}
+
+		return user;
+	}
+
+
+	public UserDTO selectUserId(Connection conn, String userId){
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		UserDTO user = null;
+
+		String sql = """
+				SELECT USER_NO, USER_ID, USER_PW, USER_NAME, ENROLL_DATE
+				FROM TB_USER
+				WHERE USER_ID = ?
+				""";
+
+		try{
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, userId);
+			rs = pstmt.executeQuery();
+
+			if(rs.next()) {
+				user = new UserDTO(
+						rs.getInt("USER_NO"),
+						rs.getString("USER_ID"),
+						rs.getString("USER_PW"),
+						rs.getString("USER_NAME"),
+						rs.getDate("ENROLL_DATE")
+				);
+			}
+		}catch(SQLException e){
+			System.out.println("SQL오류");
+		}finally{
+			try{
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(SQLException e){
+				System.out.println("close오류");
+			}
+		}
+
+		return user;
+	}
 }

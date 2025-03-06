@@ -45,5 +45,17 @@ public class UserController {
 	public int updatePw(String newPw, int userNo) {
 		return userService.updatePw(newPw, userNo);
 	}
+
+	public int userDelete(int userNo) {
+		return userService.userDelete(userNo);
+	}
+
+	public UserDTO selectUserNo(int userNo){
+		return userService.selectUserNo(userNo);
+	}
+
+	public UserDTO selectUserId(String userId){
+		return userService.selectUserId(userId);
+	}
 	
 }

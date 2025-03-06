@@ -52,4 +52,21 @@ public class MemberService {
 		
 		return userDao.updatePw(conn, newPw, userNo);
 	}
+
+
+	public int userDelete(int userNo){
+		Connection conn = JdbcUtil.getConnection();
+
+		return userDao.userDelete(conn, userNo);
+	}
+
+	public UserDTO selectUserNo(int userNo){
+		Connection conn = JdbcUtil.getConnection();
+		return userDao.selectUserNo(conn, userNo);
+	}
+
+	public UserDTO selectUserId(String userId){
+		Connection conn = JdbcUtil.getConnection();
+		return userDao.selectUserId(conn, userId);
+	}
 }

@@ -83,8 +83,8 @@ public class UserView {
 			
 			for(UserDTO user: list) {
 				System.out.println(user.getUserName() + "님의 정보 !");
-				System.out.println("\n아이디 : " + user.getUserId());
-				System.out.println("\t가입일 : " + user.getEnrollDate());
+				System.out.print("아이디 : " + user.getUserId());
+				System.out.print("\t가입일 : " + user.getEnrollDate());
 				System.out.println();
 			}
 			System.out.println("===================================================");
@@ -168,6 +168,14 @@ public class UserView {
 		System.out.print("삭제하려는 회원 번호를 입력하세요 > ");
 		int userNo = sc.nextInt();
 		sc.nextLine();
+
+		int result = userController.userDelete(userNo);
+
+		if(result > 0) {
+			System.out.println("회원삭제 성공하였습니다.");
+		}else {
+			System.out.println("회원삭제 실패하였습니다.");
+		}
 		
 	}
 	/**
@@ -179,6 +187,17 @@ public class UserView {
 		System.out.print("조회하려는 회원 번호를 입력하세요 > ");
 		int userNo = sc.nextInt();
 		sc.nextLine();
+
+		UserDTO user = userController.selectUserNo(userNo);
+
+		if(user != null) {
+			System.out.printf("\n회원번호 : %d  /  회원아이디 : %s  / 회원패스워드 : %s\n" +
+							"회원이름 : %s  / 생성일 : %s\n\n",
+					user.getUserNo(), user.getUserId(), user.getUserPw(), user.getUserName(), user.getEnrollDate());
+		}else{
+			System.out.println("회원이 존재하지 않습니다");
+		}
+
 	}
 	/**
 	 * 회원 아이디로 회원 조회
@@ -188,6 +207,20 @@ public class UserView {
 		
 		System.out.print("조회하려는 회원 아이디를 입력하세요 > ");
 		String userId = sc.nextLine();
+
+
+		UserDTO user = userController.selectUserId(userId);
+
+		if(user != null) {
+			System.out.printf("\n회원번호 : %d  /  회원아이디 : %s  / 회원패스워드 : %s\n" +
+							"회원이름 : %s  / 생성일 : %s\n\n" +
+							"",
+					user.getUserNo(), user.getUserId(), user.getUserPw(), user.getUserName(), user.getEnrollDate());
+		}else{
+			System.out.println("회원이 존재하지 않습니다");
+		}
 	}
+
+
 	
 }
