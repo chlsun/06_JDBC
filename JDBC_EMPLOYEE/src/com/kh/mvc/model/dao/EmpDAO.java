@@ -36,6 +36,7 @@ public class EmpDAO {
         List<EmpDTO> list = new ArrayList<EmpDTO>();
 
         try{
+        	
             conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();

@@ -2,15 +2,17 @@ package com.kh.mvc.controller;
 
 import com.kh.mvc.model.dao.EmpDAO;
 import com.kh.mvc.model.dto.EmpDTO;
+import com.kh.mvc.model.service.EmpService;
 
 import java.util.List;
 
 public class EmpController {
 
     EmpDAO empDAO = new EmpDAO();
+    EmpService empService = new EmpService();
 
     public List<EmpDTO> selectAll(){
-        return empDAO.selectAll();
+        return empService.selectAll();
     }
 
     public int dataInsert(String empId, String empName, String empNo){

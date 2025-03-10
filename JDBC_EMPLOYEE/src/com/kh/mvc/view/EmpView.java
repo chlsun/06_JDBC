@@ -17,7 +17,7 @@ public class EmpView {
 
         while(true){
             System.out.println();
-            System.out.println("1. 전체조회");
+            System.out.println("1. 10명의 사원 랜덤 조회");
             System.out.println("2. 데이터 추가");
             System.out.println("3. 데이터 수정");
             System.out.println("4. 데이터 삭제");
@@ -42,7 +42,7 @@ public class EmpView {
      *  회원전체의 EMP_ID, EMP_NAME, EMP_NO, DEPT_CODE 정보 조회
      */
     private void selectAll(){
-        System.out.println("--- 전체 조회 ---");
+        System.out.println("--- 10명의 사원 랜덤 조회 ---");
 
         List<EmpDTO> list = empController.selectAll();
 
